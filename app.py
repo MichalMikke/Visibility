@@ -185,7 +185,8 @@ def generate_plots(
     beam_indices,
     alarm_devices_indices,
     ordered_beams,
-    results_folder
+    results_folder,
+        basic_only=False
 ):
     try:
         fig_size = (12, 8)
@@ -193,19 +194,20 @@ def generate_plots(
         result_files = []
 
         # Generowanie wykresów dla każdej kolumny
-        for i in range(1, len(quantities)):
-            fig, ax = plt.subplots(figsize=fig_size, dpi=dpi)
-            plt.xlabel("Czas [s]")
-            plt.ylabel(f"Wartość [{units[i]}]")
-            ax.plot(data[:, 0], data[:, i], label=quantities[i])
-            ax.legend()
-            ax.get_xaxis().set_minor_locator(mpl.ticker.AutoMinorLocator())
-            ax.get_yaxis().set_minor_locator(mpl.ticker.AutoMinorLocator())
-            filename = f"devc_{i:02}_{quantities[i]}.png"
-            filepath = os.path.join(results_folder, filename)
-            fig.savefig(filepath)
-            result_files.append(filename)
-            plt.close(fig)
+        if not basic_only:
+            for i in range(1, len(quantities)):
+                fig, ax = plt.subplots(figsize=fig_size, dpi=dpi)
+                plt.xlabel("Czas [s]")
+                plt.ylabel(f"Wartość [{units[i]}]")
+                ax.plot(data[:, 0], data[:, i], label=quantities[i])
+                ax.legend()
+                ax.get_xaxis().set_minor_locator(mpl.ticker.AutoMinorLocator())
+                ax.get_yaxis().set_minor_locator(mpl.ticker.AutoMinorLocator())
+                filename = f"devc_{i:02}_{quantities[i]}.png"
+                filepath = os.path.join(results_folder, filename)
+                fig.savefig(filepath)
+                result_files.append(filename)
+                plt.close(fig)
 
         # Generowanie wykresu widoczności dla wybranych BEAM
         color_map = plt.get_cmap('viridis')
@@ -331,6 +333,7 @@ if __name__ == '__main__':
     parser.add_argument('--alarm_time', type=float, help='Alarm time')
     parser.add_argument('--ordered_beams', help='Comma-separated list of ordered beams')
     parser.add_argument('--results_folder', default='results', help='Folder to save results')
+    parser.add_argument('-b', '--basic-only', action='store_true', help='Plot only basic plots')
 
     args = parser.parse_args()
 
@@ -376,7 +379,7 @@ if __name__ == '__main__':
 
         # Czyszczenie folderu wyników
         os.makedirs(args.results_folder, exist_ok=True)
-        clear_results_folder(args.results_folder)
+        #clear_results_folder(args.results_folder)
 
         success, result_files = generate_plots(
             args.alarm_time,
@@ -387,7 +390,8 @@ if __name__ == '__main__':
             beam_indices,
             alarm_devices_indices,
             ordered_beams,
-            args.results_folder
+            args.results_folder,
+            basic_only=args.basic_only
         )
 
         if success:
