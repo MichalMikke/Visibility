@@ -269,7 +269,7 @@ def generate_plots(
             color = color_map(ccount / max(1, num_beams - 1))
 
             # Ustawienie minimalnej szerokości słupka
-            bar_width = LE_b / 1.2
+            bar_width = LP_b / 1.2
             if bar_width <= 0:
                 bar_width = 1.0  # Minimalna szerokość słupka
 
