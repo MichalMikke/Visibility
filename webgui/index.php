@@ -1,39 +1,17 @@
 <?php
 
 echo "<link rel='stylesheet' type='text/css'  href='style.css'>";
+require_once('frame.php');
+require_once('words.php');
 
-function showHeader($header){
-    echo "<div class='header'>";
-        echo "<a href='index.php'><img src='img/home.png' alt='Home' class='header-picture'></a>";
-        echo "<a href='https://aamks.apoz.edu.pl/'><img src='img/tools.png' alt='Tools' class='header-picture'></a>";
-        echo "<div class='header-text'>";
-            echo "$header";
-        echo "</div>";
-    echo "</div>";
-}
-function showFooter(){
-    echo "<div class='footer'>";
-        echo "Instytut Inżynierii Bezpieczeństwa, Akademia Pożarnicza w Warszawie<br>";
-        echo "<a href=mailto:wkowalski@apoz.edu.pl>wkowalski@apoz.edu.pl</a>";
-    echo "</div>";
-}
-function showForm($head, $form){
-    $form .= "";
-    showHeader($head);
-    echo "<div class='content'>
-        $form
-        </div>";
-    showFooter();
-}
 function showFilesSubmissionForm(){
-    $lang = "pl";
-    $head = "Przesyłanie Plików";
-    $send = "Wyślij";
+    $head = getWord(["send", "head"]);
+    $hint = getWord(["send", "hint"]);
+    $send = getWord(["send", "send"]);
 
     $form = "
-
     <form method='POST' enctype='multipart/form-data' action='?stage=send_files'>
-    <p>Wgraj pliki niezbędne do obliczenia wymaganego zasięgu widzialności.</p>
+    <p>$hint</p>
     <br><br>
         <table>
             <tr><td><i>*_devc.csv</i>   </td>
@@ -43,18 +21,18 @@ function showFilesSubmissionForm(){
             </table>
             <br><br>
         <input type='submit' name='send_files' value='$send'>
-        </form>";
+    </form>";
     showForm($head, $form);
 }
 
 function showBeamSelectionForm(){
-    $lang = "pl";
-    $head = "Wybór BEAM";
-    $send = "Wyślij";
+    $head = getWord(["beam", "head"]);
+    $hint = getWord(["beam", "hint"]);
+    $send = getWord(["beam", "send"]);
 
     $form = "
         <form method='POST' action='?stage=select_beams'>
-            <p>Zaznacz lub odznacz, aby wybrać BEAM</p>
+            <p>$hint</p>
             <br><br>
             ";
     foreach ($_SESSION['beams'] as $beam){
@@ -67,7 +45,7 @@ function showBeamSelectionForm(){
     $form .= "
             <input type='hidden' name='beam_order' id='beam_order'>
             <br><br>
-            <button type='submit'>Przetwórz wybrane BEAM</button>
+            <button type='submit'>$send</button>
         </form>
     ";
 
@@ -81,33 +59,40 @@ function showAlarmTimeForm(){
     }
     $alarm_time = $_SESSION['alarm_time'];
 
-
-    $head = "Czas alarmowania";
+    $head = getWord(["alarm", "head"]);
+    $hint = getWord(["alarm", "hint"]);
+    $alarm_text = getWord(["alarm", "alarm_text"]);
+    $send = getWord(["alarm", "send"]);
 
     $form = "
     <form action='?stage=confirm_alarm' method='POST'>
-            <p>Potwierdź lub wprowadź czas alarmowania</p>
+            <p>$hint</p>
             <br><br>
-        <label for='alarm_time'>Czas alarmowania [s]: </label>
+        <label for='alarm_time'>$alarm_text [s]: </label>
         <input type='text' name='alarm_time' id='alarm_time' value='$alarm_time' required>
         <br><br>
-        <button type='submit'>Generuj wykresy</button>
+        <button type='submit'>$send</button>
     </form>";
 
     showForm($head, $form);
 }
 
 function showDownloadForm(){
-    $head = "Wyniki";
+    $stage = "results";
+    $head = getWord([$stage, "head"]);
+    $hint = getWord([$stage, "hint"]);
+    $check = getWord([$stage, "check"]);
+    $send = getWord([$stage, "send"]);
+
     $form = "
         <form action='?stage=download' method='POST'>
-            <p>Dane przetworzone. Możesz teraz pobrać wykresy oraz usunąć swoje dane z serwera</p>
+            <p>$hint</p>
             <br><br>
-        <input type='checkbox' name='purge' value='purge' checked>Usuń moje pliki z serwera natychmiast po ich pobraniu
+        <input type='checkbox' name='purge' value='purge' checked>$check
         <br>
         <input type='hidden' name='download' value='download'/>
         <br>
-        <button type='submit'>Pobierz wyniki</button>
+        <button type='submit'>$send</button>
         <br>
     ";
     $pic = "
